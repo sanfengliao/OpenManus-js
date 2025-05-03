@@ -11,19 +11,15 @@ const DESCRIPTION = `Execute a bash command in the terminal.
  */
 class Bash extends BaseTool {
   constructor() {
-    super({
-      name: 'bash',
-      description: DESCRIPTION,
-      parameters: {
-        type: 'object',
-        properties: {
-          command: {
-            type: 'string',
-            description: 'The bash command to execute. Can be empty to view additional logs when previous exit code is `-1`. Can be `ctrl+c` to interrupt the currently running process.',
-          },
+    super('bash', DESCRIPTION, {
+      type: 'object',
+      properties: {
+        command: {
+          type: 'string',
+          description: 'The bash command to execute. Can be empty to view additional logs when previous exit code is `-1`. Can be `ctrl+c` to interrupt the currently running process.',
         },
-        required: ['command'],
       },
+      required: ['command'],
     })
   }
 

@@ -3,19 +3,15 @@ import { BaseTool } from './base'
 
 export class AskHuman extends BaseTool {
   constructor() {
-    super({
-      name: 'ask_human',
-      description: 'Use this tool to ask human for help.',
-      parameters: {
-        type: 'object',
-        properties: {
-          inquire: {
-            type: 'string',
-            description: 'The question you want to ask human.',
-          },
+    super('ask_human', 'Use this tool to ask human for help.', {
+      type: 'object',
+      properties: {
+        inquire: {
+          type: 'string',
+          description: 'The question you want to ask human.',
         },
-        required: ['inquire'],
       },
+      required: ['inquire'],
     })
   }
 

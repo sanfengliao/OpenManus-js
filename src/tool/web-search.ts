@@ -169,39 +169,35 @@ export class WebContentFetcher {
 
 export class WebSearch extends BaseTool {
   constructor() {
-    super({
-      name: 'web_search',
-      description: 'Search the web for real-time information about any topic.',
-      parameters: {
-        type: 'object',
-        properties: {
-          query: {
-            type: 'string',
-            description: '(required) The search query to submit to the search engine.',
-          },
-          numResults: {
-            type: 'integer',
-            description: '(optional) The number of search results to return. Default is 5.',
-            default: 5,
-          },
-          lang: {
-            type: 'string',
-            description: '(optional) Language code for search results (default: en).',
-            default: 'en',
-          },
-          country: {
-            type: 'string',
-            description: '(optional) Country code for search results (default: us).',
-            default: 'us',
-          },
-          fetchContent: {
-            type: 'boolean',
-            description: '(optional) Whether to fetch full content from result pages. Default is false.',
-            default: false,
-          },
+    super('web_search', 'Search the web for real-time information about any topic.', {
+      type: 'object',
+      properties: {
+        query: {
+          type: 'string',
+          description: '(required) The search query to submit to the search engine.',
         },
-        required: ['query'],
+        numResults: {
+          type: 'integer',
+          description: '(optional) The number of search results to return. Default is 5.',
+          default: 5,
+        },
+        lang: {
+          type: 'string',
+          description: '(optional) Language code for search results (default: en).',
+          default: 'en',
+        },
+        country: {
+          type: 'string',
+          description: '(optional) Country code for search results (default: us).',
+          default: 'us',
+        },
+        fetchContent: {
+          type: 'boolean',
+          description: '(optional) Whether to fetch full content from result pages. Default is false.',
+          default: false,
+        },
       },
+      required: ['query'],
     })
   }
 
