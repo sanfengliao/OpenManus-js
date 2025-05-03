@@ -52,9 +52,9 @@ export interface AskToolParams {
 
 export class LLM {
   client: OpenAI
-  model: string
+  model?: string
   temperature: number
-  constructor(config: LLMConfig) {
+  constructor(config: LLMConfig = {}) {
     const { model, temperature = 0, apiKey, apiType = 'Openai', baseURL } = config
     this.model = model
     this.temperature = temperature
@@ -87,6 +87,11 @@ export class LLM {
     model?: string
   }) {
     try {
+      model = model || this.model
+
+      if (!model) {
+        throw new Error('Model is not set')
+      }
       if (systemMessages) {
         messages = [
           ...systemMessages,
@@ -96,7 +101,7 @@ export class LLM {
 
       if (!stream) {
         const res = await this.client.chat.completions.create({
-          model: model || this.model,
+          model,
           messages,
           temperature: temperature || this.temperature,
           stream: false,
@@ -110,7 +115,7 @@ export class LLM {
       }
 
       const res = await this.client.chat.completions.create({
-        model: model || this.model,
+        model,
         messages,
         temperature: temperature || this.temperature,
         stream: true,
@@ -154,6 +159,10 @@ export class LLM {
     temperature,
     systemMessages,
   }: AskToolParams) {
+    model = model || this.model
+    if (!model) {
+      throw new Error('Model is not set')
+    }
     if (systemMessages) {
       messages = [
         ...systemMessages,
@@ -163,7 +172,7 @@ export class LLM {
     const response = await this.client.chat.completions.create({
       tools,
       messages,
-      model: model || this.model,
+      model,
       temperature: temperature || this.temperature,
       tool_choice: toolChoice,
       stream: false,
