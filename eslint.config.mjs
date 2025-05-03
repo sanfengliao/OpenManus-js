@@ -10,5 +10,6 @@ export default antfu({
     'unused-imports/no-unused-imports': 'off',
     'unused-imports/no-unused-vars': 'off',
     'node/prefer-global/process': 'off',
+    'ts/ban-ts-comment': 'off',
   },
 })

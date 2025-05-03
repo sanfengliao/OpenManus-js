@@ -18,9 +18,4 @@ export class ToolResult {
   output: any
   error?: string
   system?: string
-  constructor(output: any, error?: string, system?: string) {
-    this.output = output
-    this.error = error
-    this.system = system
-  }
 }
