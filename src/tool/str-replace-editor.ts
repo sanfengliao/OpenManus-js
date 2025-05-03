@@ -62,23 +62,23 @@ export class StrReplaceEditor extends BaseTool {
         description: 'Absolute path to file or directory.',
         type: 'string',
       },
-      file_text: {
+      fileText: {
         description: 'Required parameter of \'create\' command, with the content of the file to be created.',
         type: 'string',
       },
-      old_str: {
+      oldStr: {
         description: 'Required parameter of \'str_replace\' command containing the string in \'path\' to replace.',
         type: 'string',
       },
-      new_str: {
+      newStr: {
         description: 'Optional parameter of \'str_replace\' command containing the new string (if not given, no string will be added). Required parameter of \'insert\' command containing the string to insert.',
         type: 'string',
       },
-      insert_line: {
+      insertLine: {
         description: 'Required parameter of \'insert\' command. The \'new_str\' will be inserted AFTER the line \'insert_line\' of \'path\'.',
         type: 'integer',
       },
-      view_range: {
+      viewRange: {
         description: 'Optional parameter of \'view\' command when \'path\' points to a file. If none is given, the full file is shown. If provided, the file will be shown in the indicated line number range.',
         items: { type: 'integer' },
         type: 'array',
