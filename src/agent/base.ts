@@ -1,10 +1,11 @@
 import type { ChatCompletionMessageParam } from 'openai/resources/index'
+import type { IMessage } from '../scheme'
 import type { Role } from '../type'
 import { LLM } from '../llm'
 import { logger } from '../logger'
 import { Memory } from '../memory'
+import { Message } from '../scheme'
 import { AgentState } from '../state'
-import { MessageUtils } from '../utils/message'
 
 export interface BaseAgentOptions {
   /**
@@ -129,16 +130,19 @@ export abstract class BaseAgent {
     toolCallId?: string
   }) {
     if (role === 'user') {
-      this.memory.addMessage(MessageUtils.userMessage(content))
+      this.memory.addMessage(Message.userMessage(content))
     }
     else if (role === 'assistant') {
-      this.memory.addMessage(MessageUtils.assistantMessage(content))
+      this.memory.addMessage(Message.assistantMessage(content))
     }
     else if (role === 'tool') {
-      this.memory.addMessage(MessageUtils.toolMessage(content, toolCallId || ''))
+      this.memory.addMessage(Message.toolMessage({
+        content,
+        tool_call_id: toolCallId || '',
+      }))
     }
     else if (role === 'system') {
-      this.memory.addMessage(MessageUtils.systemMessage(content))
+      this.memory.addMessage(Message.systemMessage(content))
     }
   }
 
@@ -152,7 +156,7 @@ export abstract class BaseAgent {
       throw new Error(`Cannot run agent from state: ${this.state}`)
     }
     if (request) {
-      this.memory.addMessage(MessageUtils.userMessage(request))
+      this.memory.addMessage(Message.userMessage(request))
     }
 
     const results: string[] = []
@@ -224,7 +228,7 @@ export abstract class BaseAgent {
     return this.memory.messages
   }
 
-  set messages(messages: ChatCompletionMessageParam[]) {
+  set messages(messages: IMessage[]) {
     this.memory.messages = messages
   }
 }

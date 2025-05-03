@@ -1,3 +1,4 @@
+import type { ChatCompletionTool } from 'openai/resources/index'
 import type { BaseTool, ToolResult } from './base'
 import { ToolError } from '../exceptions'
 /**
@@ -10,8 +11,8 @@ import { ToolFailure } from './base'
  * A collection of defined tools.
  */
 export class ToolCollection {
-  private readonly tools: BaseTool[]
-  private readonly toolMap: Map<string, BaseTool>
+  readonly tools: BaseTool[]
+  readonly toolMap: Map<string, BaseTool>
 
   constructor(...tools: BaseTool[]) {
     this.tools = tools
@@ -28,7 +29,7 @@ export class ToolCollection {
   /**
    * Convert all tools to parameter format
    */
-  toParams(): Record<string, any>[] {
+  toParams(): ChatCompletionTool[] {
     return this.tools.map(tool => tool.toParam())
   }
 

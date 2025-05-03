@@ -9,7 +9,7 @@ const BASH_DESCRIPTION = `Execute a bash command in the terminal.
 /**
  * A tool for executing bash commands
  */
-class Bash extends BaseTool {
+export class Bash extends BaseTool {
   public readonly name = 'bash'
   public readonly description = BASH_DESCRIPTION
   public readonly parameters = {

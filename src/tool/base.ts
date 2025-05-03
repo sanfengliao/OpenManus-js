@@ -2,14 +2,7 @@
  * Tool parameter definition
  */
 
-export interface ToolParameters {
-  type: 'function'
-  function: {
-    name: string
-    description: string
-    parameters?: Record<string, any>
-  }
-}
+import type { ChatCompletionTool } from 'openai/resources/index'
 
 /**
  * Base result interface for tool execution
@@ -50,7 +43,7 @@ export abstract class BaseTool implements IBaseTool {
   /**
    * Convert tool to function call format
    */
-  toParam(): ToolParameters {
+  toParam(): ChatCompletionTool {
     return {
       type: 'function',
       function: {

@@ -1,20 +1,21 @@
 import type { ChatCompletionMessageParam } from 'openai/resources/index'
+import type { IMessage } from './scheme'
 
 export class Memory {
-  messages: ChatCompletionMessageParam[] = []
+  messages: IMessage[] = []
   maxMessages = 100
   /**
    * Add a message to memory
    * @param messages
    */
-  addMessages(messages: ChatCompletionMessageParam[]) {
+  addMessages(messages: IMessage[]) {
     this.messages.push(...messages)
     if (this.messages.length > this.maxMessages) {
       this.messages = this.messages.slice(this.messages.length - this.maxMessages)
     }
   }
 
-  addMessage(message: ChatCompletionMessageParam) {
+  addMessage(message: IMessage) {
     this.messages.push(message)
     if (this.messages.length > this.maxMessages) {
       this.messages = this.messages.slice(this.messages.length - this.maxMessages)

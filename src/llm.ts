@@ -1,7 +1,9 @@
 import type { ChatCompletionMessageParam, ChatCompletionSystemMessageParam, ChatCompletionTool, ChatCompletionToolChoiceOption } from 'openai/resources/chat'
-import type { LLMConfig } from './type'
+import type { IMessage } from './scheme'
 
+import type { LLMConfig } from './type'
 import OpenAI, { AzureOpenAI } from 'openai'
+import { Message } from './scheme'
 
 export interface AskParams {
   /**
@@ -28,11 +30,11 @@ export interface AskToolParams {
   /**
    * List of conversation messages
    */
-  messages: ChatCompletionMessageParam[]
+  messages: IMessage[]
   /**
    * Optional system messages to prepend
    */
-  systemMessages?: ChatCompletionSystemMessageParam[]
+  systemMsgs?: IMessage[]
   /**
    * Request timeout in seconds
    */
@@ -45,7 +47,7 @@ export interface AskToolParams {
   // Tool choice strategy
   toolChoice?: ChatCompletionToolChoiceOption
   //  Sampling temperature for the response
-  temperature: number
+  temperature?: number
 
   model?: string
 }
@@ -80,8 +82,8 @@ export class LLM {
     model,
     temperature,
   }: {
-    messages: ChatCompletionMessageParam[]
-    systemMessages?: ChatCompletionSystemMessageParam[]
+    messages: IMessage[]
+    systemMessages?: IMessage[]
     stream?: boolean
     temperature?: number
     model?: string
@@ -102,7 +104,7 @@ export class LLM {
       if (!stream) {
         const res = await this.client.chat.completions.create({
           model,
-          messages,
+          messages: messages.map(Message.toChatCompletionMessage),
           temperature: temperature || this.temperature,
           stream: false,
         })
@@ -116,7 +118,7 @@ export class LLM {
 
       const res = await this.client.chat.completions.create({
         model,
-        messages,
+        messages: messages.map(Message.toChatCompletionMessage),
         temperature: temperature || this.temperature,
         stream: true,
       })
@@ -157,21 +159,21 @@ export class LLM {
     messages,
     model,
     temperature,
-    systemMessages,
+    systemMsgs,
   }: AskToolParams) {
     model = model || this.model
     if (!model) {
       throw new Error('Model is not set')
     }
-    if (systemMessages) {
+    if (systemMsgs) {
       messages = [
-        ...systemMessages,
+        ...systemMsgs,
         ...messages,
       ]
     }
     const response = await this.client.chat.completions.create({
       tools,
-      messages,
+      messages: messages.map(Message.toChatCompletionMessage),
       model,
       temperature: temperature || this.temperature,
       tool_choice: toolChoice,
