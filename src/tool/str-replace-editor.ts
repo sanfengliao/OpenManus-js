@@ -27,9 +27,9 @@ export interface CLIResult extends ToolResult {
 export const SNIPPET_LINES = 4
 export const MAX_RESPONSE_LEN = 16000
 export const TRUNCATED_MESSAGE
-    = '<response clipped><NOTE>To save on context only part of this file has been shown to you. '
-      + 'You should retry this tool after you have searched inside the file with `grep -n` '
-      + 'in order to find the line numbers of what you are looking for.</NOTE>'
+  = '<response clipped><NOTE>To save on context only part of this file has been shown to you. '
+  + 'You should retry this tool after you have searched inside the file with `grep -n` '
+  + 'in order to find the line numbers of what you are looking for.</NOTE>'
 
 export const DESCRIPTION = `Custom editing tool for viewing, creating and editing files
 * State is persistent across command calls and discussions with the user
@@ -114,7 +114,7 @@ export class StrReplaceEditor extends BaseTool {
     oldStr?: string
     newStr?: string
     insertLine?: number
-  }): Promise<string> {
+  }): Promise<ToolResult> {
     // Get the appropriate file operator
     const operator = this.getOperator()
 
@@ -134,7 +134,7 @@ export class StrReplaceEditor extends BaseTool {
         }
         await operator.writeFile(path, fileText)
         this.fileHistory.get(path)?.push(fileText)
-        result = new ToolResult({ status: 'success', output: `File created successfully at: ${path}` })
+        result = new ToolResult(`File created successfully at: ${path}`)
         break
       case 'str_replace':
         if (!oldStr) {
@@ -160,7 +160,7 @@ export class StrReplaceEditor extends BaseTool {
         )
     }
 
-    return result.toString()
+    return new ToolResult(result.toString())
   }
 
   /**
@@ -282,7 +282,7 @@ export class StrReplaceEditor extends BaseTool {
     successMsg += this.makeOutput(snippet, `a snippet of ${path}`, startLine + 1)
     successMsg += 'Review the changes and make sure they are as expected. Edit the file again if necessary.'
 
-    return new ToolResult({ status: 'success', output: successMsg })
+    return new ToolResult(successMsg)
   }
 
   /**
@@ -343,7 +343,7 @@ export class StrReplaceEditor extends BaseTool {
     )
     successMsg += 'Review the changes and make sure they are as expected (correct indentation, no duplicate lines, etc). Edit the file again if necessary.'
 
-    return new ToolResult({ status: 'success', output: successMsg })
+    return new ToolResult(successMsg)
   }
 
   /**
@@ -361,10 +361,8 @@ export class StrReplaceEditor extends BaseTool {
     const oldText = history.pop()!
     await operator.writeFile(path, oldText)
 
-    return new ToolResult({
-      status: 'success',
-      output: `Last edit to ${path} undone successfully. ${this.makeOutput(oldText, String(path))}`,
-    })
+    return new ToolResult(`Last edit to ${path} undone successfully. ${this.makeOutput(oldText, String(path))}`,
+    )
   }
 
   /**
@@ -427,10 +425,10 @@ export class StrReplaceEditor extends BaseTool {
         '',
       ].join('\n')
 
-      return new ToolResult({ status: 'success', output })
+      return new ToolResult(output)
     }
 
-    return new ToolResult({ status: 'error', error: stderr })
+    return new ToolResult('error', stderr)
   }
 
   /**
@@ -488,9 +486,8 @@ export class StrReplaceEditor extends BaseTool {
     }
 
     // Format and return result
-    return new ToolResult({
-      status: 'success',
-      output: this.makeOutput(fileContent, String(path), initLine),
-    })
+    return new ToolResult(
+      this.makeOutput(fileContent, String(path), initLine),
+    )
   }
 }

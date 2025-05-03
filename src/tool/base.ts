@@ -38,7 +38,7 @@ export abstract class BaseTool implements IBaseTool {
   /**
    * Execute the tool with given parameters - to be implemented by subclasses
    */
-  abstract execute(params?: any): Promise<any>
+  abstract execute(params?: any): Promise<ToolResult>
 
   /**
    * Convert tool to function call format

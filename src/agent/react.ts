@@ -14,6 +14,7 @@ export abstract class ReactAgent extends BaseAgent {
     if (!shouldContinue) {
       return 'Thinking complete - no action needed'
     }
-    return this.act()
+    const res = await this.act()
+    return res
   }
 }

@@ -1,5 +1,5 @@
 import { $ } from 'zx'
-import { BaseTool } from './base'
+import { BaseTool, CLIResult } from './base'
 
 const BASH_DESCRIPTION = `Execute a bash command in the terminal.
 * Long running commands: For commands that may run indefinitely, it should be run in the background and the output should be redirected to a file, e.g. command = \`python3 app.py > server.log 2>&1 &\`.
@@ -26,7 +26,9 @@ export class Bash extends BaseTool {
   async execute(params: any): Promise<any> {
     // @ts-expect-error
     const result = await $([params.command, ...[]])
-    return result
+    return new CLIResult(
+      result.stdout.trimEnd(),
+    )
   }
 }
 

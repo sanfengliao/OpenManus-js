@@ -73,6 +73,7 @@ export class ToolCallAgent extends ReactAgent {
           : undefined,
         tools: this.availableTools.toParams(),
         toolChoice: this.toolChoices,
+        model: 'deepseek-ai/DeepSeek-V3',
       })
 
       this.toolCalls = response?.tool_calls || []
@@ -196,19 +197,22 @@ export class ToolCallAgent extends ReactAgent {
     }
 
     const { name } = command.function
-    if (!(name in this.availableTools.toolMap)) {
+    if (!this.availableTools.toolMap.has(name)) {
       return `Error: Unknown tool '${name}'`
     }
 
     try {
       // 解析参数
-      const args = JSON.parse(command.function.arguments || '{}')
+      let args = command.function.arguments
+      if (typeof args === 'string') {
+        args = JSON.parse(args || '{}')
+      }
 
       // 执行工具
       logger.info(`🔧 Activating tool: '${name}'...`)
       const result = await this.availableTools.execute({
         name,
-        toolInput: args,
+        toolInput: args as Record<string, any>,
       })
 
       // 处理特殊工具

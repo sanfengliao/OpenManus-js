@@ -4,6 +4,7 @@ import type { IMessage } from './scheme'
 import type { LLMConfig } from './type'
 import OpenAI, { AzureOpenAI } from 'openai'
 import { Message } from './scheme'
+import { logger } from './logger'
 
 export interface AskParams {
   /**
@@ -171,6 +172,7 @@ export class LLM {
         ...messages,
       ]
     }
+
     const response = await this.client.chat.completions.create({
       tools,
       messages: messages.map(Message.toChatCompletionMessage),

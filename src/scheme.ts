@@ -35,7 +35,7 @@ export enum AgentState {
  */
 export interface Function {
   name: string
-  arguments: string
+  arguments: string | Record<string, any>
 }
 
 /**
@@ -91,15 +91,15 @@ export class Message implements IMessage {
     if (message.content !== null && message.content !== undefined) {
       chatMessage.content = message.content
     }
-    if (message.tool_calls) {
-      (chatMessage as any).tool_calls = message.tool_calls.map(call => ({
-        id: call.id,
-        type: call.type,
-        function: call.function,
-      }))
-    }
+    // if (message.tool_calls) {
+    //   (chatMessage as any).tool_calls = message.tool_calls.map(call => ({
+    //     id: call.id,
+    //     type: call.type,
+    //     function: call.function,
+    //   }))
+    // }
     if (message.name) {
-      (chatMessage as any).name = this.name
+      (chatMessage as any).name = message.name
     }
     if (message.tool_call_id) {
       (chatMessage as ChatCompletionToolMessageParam).tool_call_id = message.tool_call_id
@@ -164,7 +164,7 @@ export class Message implements IMessage {
       id: call.id,
       function: {
         ...call.function,
-        arguments: JSON.stringify(call.function.arguments),
+        arguments: call.function.arguments,
       },
       type: 'function' as const,
     }))

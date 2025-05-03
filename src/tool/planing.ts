@@ -189,10 +189,9 @@ export class PlanningTool extends BaseTool {
     this.plans[planId] = plan
     this.currentPlanId = planId // Set as active plan
 
-    return new ToolResult({
-      status: 'success',
-      output: `Plan created successfully with ID: ${planId}\n\n${this.formatPlan(plan)}`,
-    })
+    return new ToolResult(
+      `Plan created successfully with ID: ${planId}\n\n${this.formatPlan(plan)}`,
+    )
   }
 
   /**
@@ -249,10 +248,9 @@ export class PlanningTool extends BaseTool {
       plan.step_notes = newNotes
     }
 
-    return new ToolResult({
-      status: 'success',
-      output: `Plan updated successfully: ${planId}\n\n${this.formatPlan(plan)}`,
-    })
+    return new ToolResult(
+      `Plan updated successfully: ${planId}\n\n${this.formatPlan(plan)}`,
+    )
   }
 
   /**
@@ -260,10 +258,9 @@ export class PlanningTool extends BaseTool {
    */
   private listPlans(): ToolResult {
     if (Object.keys(this.plans).length === 0) {
-      return new ToolResult({
-        status: 'success',
-        output: 'No plans available. Create a plan with the \'create\' command.',
-      })
+      return new ToolResult(
+        'No plans available. Create a plan with the \'create\' command.',
+      )
     }
 
     let output = 'Available plans:\n'
@@ -279,10 +276,9 @@ export class PlanningTool extends BaseTool {
       output += `• ${planId}${currentMarker}: ${plan.title} - ${progress}\n`
     })
 
-    return new ToolResult({
-      status: 'success',
+    return new ToolResult(
       output,
-    })
+    )
   }
 
   /**
@@ -303,10 +299,9 @@ export class PlanningTool extends BaseTool {
       throw new ToolError(`No plan found with ID: ${planId}`)
     }
 
-    return new ToolResult({
-      status: 'success',
-      output: this.formatPlan(this.plans[planId]),
-    })
+    return new ToolResult(
+      this.formatPlan(this.plans[planId]),
+    )
   }
 
   /**
@@ -323,10 +318,9 @@ export class PlanningTool extends BaseTool {
 
     this.currentPlanId = planId
 
-    return new ToolResult({
-      status: 'success',
-      output: `Plan '${planId}' is now the active plan.\n\n${this.formatPlan(this.plans[planId])}`,
-    })
+    return new ToolResult(
+      `Plan '${planId}' is now the active plan.\n\n${this.formatPlan(this.plans[planId])}`,
+    )
   }
 
   /**
@@ -378,10 +372,9 @@ export class PlanningTool extends BaseTool {
       plan.step_notes[stepIndex] = stepNotes
     }
 
-    return new ToolResult({
-      status: 'success',
-      output: `Step ${stepIndex} updated in plan '${planId}'.\n\n${this.formatPlan(plan)}`,
-    })
+    return new ToolResult(
+      `Step ${stepIndex} updated in plan '${planId}'.\n\n${this.formatPlan(plan)}`,
+    )
   }
 
   /**
@@ -403,9 +396,8 @@ export class PlanningTool extends BaseTool {
       this.currentPlanId = undefined
     }
 
-    return new ToolResult({
-      status: 'success',
-      output: `Plan '${planId}' has been deleted.`,
-    })
+    return new ToolResult(
+      `Plan '${planId}' has been deleted.`,
+    )
   }
 }

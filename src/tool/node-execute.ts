@@ -2,12 +2,9 @@ import { spawn } from 'node:child_process'
 import * as os from 'node:os'
 import * as path from 'node:path'
 
-import { BaseTool } from './base'
+import { BaseTool, ToolResult } from './base'
 
-interface ExecuteResult {
-  observation: string
-  success: boolean
-}
+
 
 /**
  * A tool for executing Node.js code with timeout and safety restrictions
@@ -28,7 +25,7 @@ export class NodeExecute extends BaseTool {
 
   async execute(
     params: { code: string, timeout?: number },
-  ): Promise<ExecuteResult> {
+  ): Promise<ToolResult> {
     const { code, timeout = 5000 } = params
 
     return new Promise((resolve) => {
@@ -40,10 +37,7 @@ export class NodeExecute extends BaseTool {
 
       const timeoutId = setTimeout(() => {
         child.kill()
-        resolve({
-          observation: `执行超时，超过 ${timeout / 1000} 秒`,
-          success: false,
-        })
+        resolve(new ToolResult(`执行超时，超过 ${timeout / 1000} 秒`))
       }, timeout)
 
       child.stdout.on('data', (data) => {
@@ -56,18 +50,12 @@ export class NodeExecute extends BaseTool {
 
       child.on('close', (code) => {
         clearTimeout(timeoutId)
-        resolve({
-          observation: output || `进程退出，退出码 ${code}`,
-          success: code === 0,
-        })
+        resolve(new ToolResult(output))
       })
 
       child.on('error', (error) => {
         clearTimeout(timeoutId)
-        resolve({
-          observation: error.message,
-          success: false,
-        })
+        resolve(new ToolResult(output))
       })
     })
   }

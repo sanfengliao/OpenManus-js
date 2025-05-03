@@ -1,4 +1,4 @@
-import { BaseTool } from './base'
+import { BaseTool, ToolResult } from './base'
 
 const TERMINATE_DESCRIPTION = `Terminate the interaction when the request is met OR if the assistant cannot proceed further with the task.
 When you have finished all the tasks, call this tool to end the work.`
@@ -30,7 +30,7 @@ export class Terminate extends BaseTool {
   /**
    * Finish the current execution
    */
-  async execute({ status }: TerminateParams): Promise<string> {
-    return `The interaction has been completed with status: ${status}`
+  async execute({ status }: TerminateParams): Promise<ToolResult> {
+    return new ToolResult(`The interaction has been completed with status: ${status}`)
   }
 }

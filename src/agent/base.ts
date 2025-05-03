@@ -109,19 +109,28 @@ export abstract class BaseAgent {
    * @param newState The state to transition to during the context.
    * @param fun  Allows execution function within the new state
    */
-  async saveContext(newState: AgentState, fun: (...args: any[]) => any) {
-    const prevState = this.state
-    this.state = newState
-    try {
-      await fun()
-    }
-    catch (err) {
-      this.state = AgentState.ERROR
-      throw err
-    }
-    finally {
-      this.state = prevState
-    }
+    /**
+     * Context manager for safe agent state transitions
+     */
+    protected async withState<T>(
+      newState: AgentState,
+      action: () => Promise<T>
+  ): Promise<T> {
+      if (!Object.values(AgentState).includes(newState)) {
+          throw new Error(`Invalid state: ${newState}`);
+      }
+
+      const previousState = this.state;
+      this.state = newState;
+
+      try {
+          return await action();
+      } catch (error) {
+          this.state = AgentState.ERROR;
+          throw error;
+      } finally {
+          this.state = previousState;
+      }
   }
 
   updateMemory({ role, content, toolCallId }: {
@@ -161,8 +170,9 @@ export abstract class BaseAgent {
 
     const results: string[] = []
 
-    this.saveContext(AgentState.RUNNING, async () => {
+    this.withState(AgentState.RUNNING, async () => {
       while (this.currentStep < this.maxSteps && this.state !== AgentState.FINISHED) {
+
         this.currentStep++
         logger.info(`Executing step ${this.currentStep}/${this.maxSteps}`)
         const stepResult = await this.step()
@@ -232,3 +242,5 @@ export abstract class BaseAgent {
     this.memory.messages = messages
   }
 }
+
+

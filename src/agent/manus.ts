@@ -21,6 +21,7 @@ export interface ManusConfig {
   maxObserve?: number
   maxSteps?: number
   workspaceRoot?: string
+  model?: string
 }
 
 export interface ServerConnection {
