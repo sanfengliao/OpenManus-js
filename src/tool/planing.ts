@@ -102,13 +102,13 @@ export class PlanningTool extends BaseTool {
   }
 
   /**
-   * 格式化计划以供显示
+   * Format plan for display
    */
   private formatPlan(plan: Plan): string {
     let output = `Plan: ${plan.title} (ID: ${plan.plan_id})\n`
     output += `${'='.repeat(output.length)}\n\n`
 
-    // 计算进度统计
+    // Calculate progress statistics
     const totalSteps = plan.steps.length
     const completed = plan.step_statuses.filter(status => status === 'completed').length
     const inProgress = plan.step_statuses.filter(status => status === 'in_progress').length
@@ -127,7 +127,7 @@ export class PlanningTool extends BaseTool {
     output += `Status: ${completed} completed, ${inProgress} in progress, ${blocked} blocked, ${notStarted} not started\n\n`
     output += 'Steps:\n'
 
-    // 添加每个步骤及其状态和备注
+    // Add each step with its status and notes
     const statusSymbols: Record<PlanStatus, string> = {
       not_started: '[ ]',
       in_progress: '[→]',
@@ -150,7 +150,7 @@ export class PlanningTool extends BaseTool {
   }
 
   /**
-   * 创建新计划
+   * Create a new plan
    */
   private createPlan(
     planId?: string,
@@ -177,7 +177,7 @@ export class PlanningTool extends BaseTool {
       )
     }
 
-    // 创建新计划并初始化步骤状态
+    // Create a new plan and initialize step statuses
     const plan: Plan = {
       plan_id: planId,
       title,
@@ -187,7 +187,7 @@ export class PlanningTool extends BaseTool {
     }
 
     this.plans[planId] = plan
-    this.currentPlanId = planId // 设置为活动计划
+    this.currentPlanId = planId // Set as active plan
 
     return new ToolResult({
       status: 'success',
@@ -196,7 +196,7 @@ export class PlanningTool extends BaseTool {
   }
 
   /**
-   * 更新现有计划
+   * Update an existing plan
    */
   private updatePlan(
     planId?: string,
@@ -224,12 +224,12 @@ export class PlanningTool extends BaseTool {
         )
       }
 
-      // 为更改的步骤保留现有状态
+      // Retain existing statuses for unchanged steps
       const oldSteps = plan.steps
       const oldStatuses = plan.step_statuses
       const oldNotes = plan.step_notes
 
-      // 创建新的步骤状态和备注
+      // Create new step statuses and notes
       const newStatuses: PlanStatus[] = []
       const newNotes: string[] = []
 
@@ -256,7 +256,7 @@ export class PlanningTool extends BaseTool {
   }
 
   /**
-   * 列出所有可用计划
+   * List all available plans
    */
   private listPlans(): ToolResult {
     if (Object.keys(this.plans).length === 0) {
@@ -286,11 +286,11 @@ export class PlanningTool extends BaseTool {
   }
 
   /**
-   * 获取特定计划的详细信息
+   * Get details of a specific plan
    */
   private getPlan(planId?: string): ToolResult {
     if (!planId) {
-      // 如果未提供计划ID，使用当前活动计划
+      // If no plan ID is provided, use the current active plan
       if (!this.currentPlanId) {
         throw new ToolError(
           'No active plan. Please specify a plan_id or set an active plan.',
@@ -310,7 +310,7 @@ export class PlanningTool extends BaseTool {
   }
 
   /**
-   * 设置活动计划
+   * Set the active plan
    */
   private setActivePlan(planId?: string): ToolResult {
     if (!planId) {
@@ -330,7 +330,7 @@ export class PlanningTool extends BaseTool {
   }
 
   /**
-   * 标记步骤状态和添加备注
+   * Mark step status and add notes
    */
   private markStep(
     planId?: string,
@@ -339,7 +339,7 @@ export class PlanningTool extends BaseTool {
     stepNotes?: string,
   ): ToolResult {
     if (!planId) {
-      // 如果未提供计划ID，使用当前活动计划
+      // If no plan ID is provided, use the current active plan
       if (!this.currentPlanId) {
         throw new ToolError(
           'No active plan. Please specify a plan_id or set an active plan.',
@@ -385,7 +385,7 @@ export class PlanningTool extends BaseTool {
   }
 
   /**
-   * 删除计划
+   * Delete a plan
    */
   private deletePlan(planId?: string): ToolResult {
     if (!planId) {
@@ -398,7 +398,7 @@ export class PlanningTool extends BaseTool {
 
     delete this.plans[planId]
 
-    // 如果删除的是当前活动计划，清除活动计划
+    // If the deleted plan is the current active plan, clear the active plan
     if (this.currentPlanId === planId) {
       this.currentPlanId = undefined
     }
