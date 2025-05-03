@@ -2,17 +2,17 @@ import prompt from 'prompts'
 import { BaseTool } from './base'
 
 export class AskHuman extends BaseTool {
-  constructor() {
-    super('ask_human', 'Use this tool to ask human for help.', {
-      type: 'object',
-      properties: {
-        inquire: {
-          type: 'string',
-          description: 'The question you want to ask human.',
-        },
+  name: string = 'ask_human'
+  description: string = 'Use this tool to ask human for help.'
+  parameters: Record<string, any> | undefined = {
+    type: 'object',
+    properties: {
+      inquire: {
+        type: 'string',
+        description: 'The question you want to ask human.',
       },
-      required: ['inquire'],
-    })
+    },
+    required: ['inquire'],
   }
 
   async execute(params: any): Promise<any> {

@@ -21,16 +21,20 @@ export interface IToolResult {
   system?: string
 }
 
+export interface IBaseTool {
+  readonly name: string
+  readonly description: string
+  readonly parameters?: Record<string, any>
+
+}
+
 /**
  * Base class for all tools
  */
-export abstract class BaseTool {
-  constructor(
-    public readonly name: string,
-    public readonly description: string,
-    public readonly parameters?: Record<string, any>,
-  ) {}
-
+export abstract class BaseTool implements IBaseTool {
+  name!: string
+  description!: string
+  parameters?: Record<string, any> | undefined
   /**
    * Execute the tool with given parameters
    */
