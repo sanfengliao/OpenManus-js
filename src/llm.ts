@@ -13,6 +13,7 @@ import { config } from './config'
 import { TokenLimitExceeded } from './exceptions'
 import { logger } from './logger'
 import { Message, ToolChoice } from './scheme'
+import { retry } from './decorator/retry'
 
 // 新增的接口定义
 export interface AskParams {
@@ -408,12 +409,12 @@ export class LLM {
     return formattedMessages
   }
 
-  //   @retry({
-  //     attempts: 6,
-  //     delay: { min: 1000, max: 60000 },
-  //     errorTypes: [Error]
-  // })
-  public async ask(params: AskParams): Promise<string> {
+  @retry({
+      attempts: 6,
+      delay: { min: 1000, max: 60000 },
+      errorTypes: [Error]
+  })
+  public async ask(params: AskParams) {
     try {
       const { messages, systemMsgs, stream = true, temperature, model } = params
       const supportsImages = MULTIMODAL_MODELS.includes(this.model)
@@ -513,12 +514,12 @@ export class LLM {
     }
   }
 
-  // @retry({
-  //   attempts: 6,
-  //   delay: { min: 1000, max: 60000 },
-  //   errorTypes: [Error]
-  // })
-  public async askWithImages(params: AskWithImagesParams): Promise<string> {
+  @retry({
+    attempts: 6,
+    delay: { min: 1000, max: 60000 },
+    errorTypes: [Error]
+  })
+  public async askWithImages(params: AskWithImagesParams) {
     try {
       const { messages, images, systemMsgs, stream = false, temperature, model } = params
       const isToolCallParamRequired = TOOL_CALL_PARAM_REQUIRED_MODELS.includes(this.model)
@@ -635,12 +636,12 @@ export class LLM {
     }
   }
 
-  // @retry({
-  //   attempts: 6,
-  //   delay: { min: 1000, max: 60000 },
-  //   errorTypes: [Error]
-  // })
-  public async askTool(params: AskToolParams): Promise<any> {
+  @retry({
+    attempts: 6,
+    delay: { min: 1000, max: 60000 },
+    errorTypes: [Error]
+  })
+  public async askTool(params: AskToolParams) {
     try {
       const { messages, systemMsgs, tools, toolChoice = ToolChoice.AUTO, temperature, extraParams, model } = params
 
