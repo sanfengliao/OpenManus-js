@@ -1,4 +1,4 @@
-import { config } from 'dotenv'
+
 import prompts from 'prompts'
 import { Manus } from './agent/manus'
 import { logger } from './logger'
@@ -7,7 +7,6 @@ import { logger } from './logger'
  * Main application function
  */
 async function main(): Promise<void> {
-  config()
   // Create and initialize Manus agent
   const agent = await Manus.create()
   console.log(agent.availableTools.toParams().length)

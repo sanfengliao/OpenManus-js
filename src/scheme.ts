@@ -2,15 +2,9 @@
  * 消息角色选项
  */
 
-import type { ChatCompletionMessageParam, ChatCompletionToolMessageParam } from 'openai/resources/index'
+import type { ChatCompletionContentPart, ChatCompletionMessageParam, ChatCompletionToolMessageParam, ChatCompletionRole } from 'openai/resources/index'
 
-export enum Role {
-  SYSTEM = 'system',
-  USER = 'user',
-  ASSISTANT = 'assistant',
-  TOOL = 'tool',
-}
-
+export type Role = ChatCompletionRole;
 /**
  * 工具选择选项
  */
@@ -47,16 +41,33 @@ export interface ToolCall {
   function: Function
 }
 
+export interface ImageItem {
+  type: 'image_url';
+  image_url: {
+    url: string;
+    detail?: 'low' | 'medium' | 'high';
+    dimensions?: [number, number];
+  };
+}
+
+export interface TextItem {
+  type: 'text';
+  text: string;
+}
+
+export type ContentItem = string | (TextItem | ImageItem)[];
+
+
 /**
  * 消息的基本结构
  */
 export interface IMessage {
   role: Role
-  content?: string | null
-  tool_calls?: ToolCall[] | null
-  name?: string | null
-  tool_call_id?: string | null
-  base64_image?: string | null
+  content?: ContentItem
+  tool_calls?: ToolCall[]
+  name?: string
+  tool_call_id?: string
+  base64_image?: string
 }
 
 /**
@@ -75,21 +86,21 @@ export interface Memory {
 export class Message implements IMessage {
   constructor(
     public role: Role,
-    public content?: string | null,
-    public tool_calls?: ToolCall[] | null,
-    public name?: string | null,
-    public tool_call_id?: string | null,
-    public base64_image?: string | null,
+    public content?: ContentItem,
+    public tool_calls?: ToolCall[],
+    public name?: string,
+    public tool_call_id?: string,
+    public base64_image?: string,
   ) { }
 
   /**
    * 将消息转换为字典格式
    */
-  static toChatCompletionMessage(message: IMessage): ChatCompletionMessageParam {
-    const chatMessage = { role: message.role } as ChatCompletionMessageParam
+  static toChatCompletionMessage(message: IMessage): IMessage {
+    const chatMessage: IMessage = { role: message.role }
 
     if (message.content !== null && message.content !== undefined) {
-      chatMessage.content = message.content
+      chatMessage.content = message.content;
     }
     // if (message.tool_calls) {
     //   (chatMessage as any).tool_calls = message.tool_calls.map(call => ({
@@ -115,21 +126,21 @@ export class Message implements IMessage {
    * 创建用户消息
    */
   static userMessage(content: string, base64_image?: string): Message {
-    return new Message(Role.USER, content, null, null, null, base64_image)
+    return new Message('user', content, undefined, undefined, undefined, base64_image)
   }
 
   /**
    * 创建系统消息
    */
   static systemMessage(content: string): Message {
-    return new Message(Role.SYSTEM, content)
+    return new Message('system', content)
   }
 
   /**
    * 创建助手消息
    */
   static assistantMessage(content?: string, base64_image?: string): Message {
-    return new Message(Role.ASSISTANT, content, null, null, null, base64_image)
+    return new Message('assistant', content, undefined, undefined, undefined, base64_image)
   }
 
   /**
@@ -142,9 +153,9 @@ export class Message implements IMessage {
     base64_image?: string
   }): Message {
     return new Message(
-      Role.TOOL,
+      'tool',
       params.content,
-      null,
+      undefined,
       params.name,
       params.tool_call_id,
       params.base64_image,
@@ -170,7 +181,7 @@ export class Message implements IMessage {
     }))
 
     return new Message(
-      Role.ASSISTANT,
+      'assistant',
       Array.isArray(content) ? content.join('\n') : content,
       formatted_calls,
       kwargs.name,
