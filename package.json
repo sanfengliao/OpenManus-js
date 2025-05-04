@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx src/main.ts"
+    "dev": "tsx src/main.ts",
+    "lint:fix": "eslint --fix ./src"
   },
   "keywords": [],
   "author": "",

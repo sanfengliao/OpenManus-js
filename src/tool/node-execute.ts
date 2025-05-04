@@ -4,8 +4,6 @@ import * as path from 'node:path'
 
 import { BaseTool, ToolResult } from './base'
 
-
-
 /**
  * A tool for executing Node.js code with timeout and safety restrictions
  */
@@ -53,7 +51,7 @@ export class NodeExecute extends BaseTool {
         resolve(new ToolResult(output))
       })
 
-      child.on('error', (error) => {
+      child.on('error', () => {
         clearTimeout(timeoutId)
         resolve(new ToolResult(output))
       })

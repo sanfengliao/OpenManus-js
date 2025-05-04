@@ -19,7 +19,6 @@ import { SearchItem, WebSearchEngine } from './base'
  * - OpenSSL版本：OpenSSL/x.y.z，其中x是1-3，y是0-4，z是0-9
  *
  * @returns The randomly generated user agent string
- * @returns 随机生成的用户代理字符串
  */
 export function getUserAgent(): string {
   const getRandomInt = (min: number, max: number): number =>

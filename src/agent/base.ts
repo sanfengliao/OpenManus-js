@@ -33,14 +33,14 @@ export abstract class BaseAgent {
   llm: LLM
   memory: Memory
 
-  constructor({ 
-    name, 
+  constructor({
+    name,
     systemPrompt,
     nextStepPrompt,
     maxSteps = 10,
     duplicateThreshold = 2,
-    memory = new Memory(), 
-    llm = new LLM() 
+    memory = new Memory(),
+    llm = new LLM(),
   }: BaseAgentOptions) {
     this.name = name
     this.systemPrompt = systemPrompt
@@ -56,22 +56,24 @@ export abstract class BaseAgent {
    */
   protected async withState<T>(
     newState: AgentState,
-    action: () => Promise<T>
+    action: () => Promise<T>,
   ): Promise<T> {
     if (!Object.values(AgentState).includes(newState)) {
-      throw new Error(`Invalid state: ${newState}`);
+      throw new Error(`Invalid state: ${newState}`)
     }
 
-    const previousState = this.state;
-    this.state = newState;
+    const previousState = this.state
+    this.state = newState
 
     try {
-      return await action();
-    } catch (error) {
-      this.state = AgentState.ERROR;
-      throw error;
-    } finally {
-      this.state = previousState;
+      return await action()
+    }
+    catch (error) {
+      this.state = AgentState.ERROR
+      throw error
+    }
+    finally {
+      this.state = previousState
     }
   }
 
@@ -114,7 +116,6 @@ export abstract class BaseAgent {
 
     this.withState(AgentState.RUNNING, async () => {
       while (this.currentStep < this.maxSteps && this.state !== AgentState.FINISHED) {
-
         this.currentStep++
         logger.info(`Executing step ${this.currentStep}/${this.maxSteps}`)
         const stepResult = await this.step(model)
@@ -184,5 +185,3 @@ export abstract class BaseAgent {
     this.memory.messages = messages
   }
 }
-
-

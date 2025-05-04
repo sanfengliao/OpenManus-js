@@ -1,15 +1,15 @@
 import type { ToolCall } from '../scheme'
+import type { BaseAgentOptions } from './base'
+import { LLM } from '../llm'
 import { logger } from '../logger'
+import { Memory } from '../memory'
 import { NEXT_STEP_PROMPT, SYSTEM_PROMPT } from '../prompt/toolcall'
 import { Message } from '../scheme'
+
 import { AgentState } from '../state'
 import { Terminate } from '../tool/terminal'
 import { ToolCollection } from '../tool/tool-collection'
-
 import { ReactAgent } from './react'
-import { LLM } from '../llm'
-import { Memory } from '../memory'
-import { BaseAgentOptions } from './base'
 
 const TOOL_CALL_REQUIRED = 'Tool calls required but none provided'
 export enum ToolChoice {
@@ -18,7 +18,7 @@ export enum ToolChoice {
   REQUIRED = 'required',
 }
 
-export interface ToolCallAgentConfig  extends Partial<BaseAgentOptions> {
+export interface ToolCallAgentConfig extends Partial<BaseAgentOptions> {
   availableTools?: ToolCollection
   toolChoices?: ToolChoice
   specialToolNames?: string[]

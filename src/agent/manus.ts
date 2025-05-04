@@ -35,7 +35,7 @@ export class Manus extends ToolCallAgent {
         new Bash(),
         new Terminate(),
       ),
-      specialToolNames: [new Terminate().name]
+      specialToolNames: [new Terminate().name],
     })
   }
 

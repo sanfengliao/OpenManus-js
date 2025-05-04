@@ -2,9 +2,9 @@
  * 消息角色选项
  */
 
-import type { ChatCompletionContentPart, ChatCompletionMessageParam, ChatCompletionToolMessageParam, ChatCompletionRole } from 'openai/resources/index'
+import type { ChatCompletionContentPart, ChatCompletionMessageParam, ChatCompletionRole, ChatCompletionToolMessageParam } from 'openai/resources/index'
 
-export type Role = ChatCompletionRole;
+export type Role = ChatCompletionRole
 /**
  * 工具选择选项
  */
@@ -42,21 +42,20 @@ export interface ToolCall {
 }
 
 export interface ImageItem {
-  type: 'image_url';
+  type: 'image_url'
   image_url: {
-    url: string;
-    detail?: 'low' | 'medium' | 'high';
-    dimensions?: [number, number];
-  };
+    url: string
+    detail?: 'low' | 'medium' | 'high'
+    dimensions?: [number, number]
+  }
 }
 
 export interface TextItem {
-  type: 'text';
-  text: string;
+  type: 'text'
+  text: string
 }
 
-export type ContentItem = string | (TextItem | ImageItem)[];
-
+export type ContentItem = string | (TextItem | ImageItem)[]
 
 /**
  * 消息的基本结构
@@ -100,23 +99,23 @@ export class Message implements IMessage {
     const chatMessage: IMessage = { role: message.role }
 
     if (message.content !== null && message.content !== undefined) {
-      chatMessage.content = message.content;
+      chatMessage.content = message.content
     }
-    // if (message.tool_calls) {
-    //   (chatMessage as any).tool_calls = message.tool_calls.map(call => ({
-    //     id: call.id,
-    //     type: call.type,
-    //     function: call.function,
-    //   }))
-    // }
+    if (message.tool_calls) {
+      chatMessage.tool_calls = message.tool_calls.map(call => ({
+        id: call.id,
+        type: call.type,
+        function: call.function,
+      }))
+    }
     if (message.name) {
       (chatMessage as any).name = message.name
     }
     if (message.tool_call_id) {
-      (chatMessage as ChatCompletionToolMessageParam).tool_call_id = message.tool_call_id
+      chatMessage.tool_call_id = message.tool_call_id
     }
     if (message.base64_image) {
-      (chatMessage as any).base64_image = message.base64_image
+      chatMessage.base64_image = message.base64_image
     }
 
     return chatMessage
