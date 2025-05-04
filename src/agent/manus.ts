@@ -7,8 +7,9 @@ import { StrReplaceEditor } from '../tool/str-replace-editor'
 import { Terminate } from '../tool/terminal'
 import { ToolCollection } from '../tool/tool-collection'
 import { ToolCallAgent } from './toolcall'
+import { config } from '../config';
 
-export interface ManusConfig {
+export interface ManusParams {
   availableTools?: ToolCollection
   maxObserve?: number
   maxSteps?: number
@@ -21,14 +22,14 @@ export interface ManusConfig {
 export class Manus extends ToolCallAgent {
   private initialized: boolean = false
 
-  constructor(config: ManusConfig = {}) {
+  constructor(params: ManusParams = {}) {
     super({
       name: 'Manus',
-      systemPrompt: SYSTEM_PROMPT(config.workspaceRoot || process.cwd()),
+      systemPrompt: SYSTEM_PROMPT(params.workspaceRoot || config.workspaceRoot),
       nextStepPrompt: NEXT_STEP_PROMPT,
-      maxSteps: config.maxSteps,
-      maxObserve: config.maxObserve,
-      availableTools: config.availableTools || new ToolCollection(
+      maxSteps: params.maxSteps,
+      maxObserve: params.maxObserve,
+      availableTools: params.availableTools || new ToolCollection(
         new NodeExecute(),
         new StrReplaceEditor(),
         new AskHuman(),
@@ -42,7 +43,7 @@ export class Manus extends ToolCallAgent {
   /**
    * Factory method to create and properly initialize a Manus instance
    */
-  public static async create(config?: ManusConfig): Promise<Manus> {
+  public static async create(config?: ManusParams): Promise<Manus> {
     const instance = new Manus(config)
     await instance.initializeMcpServers()
     instance.initialized = true

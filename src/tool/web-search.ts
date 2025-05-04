@@ -13,6 +13,7 @@ import { BaseTool, ToolResult } from '../tool/base'
 import { BaiduSearchEngine } from './search/baidu-search'
 import { BingSearchEngine } from './search/bing-search'
 import { GoogleSearchEngine } from './search/google-search'
+import { config } from '../config'
 
 /**
  * Represents a single search result returned by a search engine
@@ -216,13 +217,13 @@ export class WebSearch extends BaseTool {
     const {
       query,
       numResults = 5,
-      lang = 'en',
-      country = 'us',
+      lang = config.searchConfig?.lang ?? 'en',
+      country = config.searchConfig?.country ?? 'us',
       fetchContent = false,
     } = params
 
-    const retryDelay = 60
-    const maxRetries = 3
+    const retryDelay = config.searchConfig?.retryDelay ?? 60
+    const maxRetries = config.searchConfig?.maxRetries ?? 3
 
     // Try searching with retries when all engines fail
     for (let retryCount = 0; retryCount <= maxRetries; retryCount++) {
