@@ -7,6 +7,9 @@ import { Terminate } from '../tool/terminal'
 import { ToolCollection } from '../tool/tool-collection'
 
 import { ReactAgent } from './react'
+import { LLM } from '../llm'
+import { Memory } from '../memory'
+import { BaseAgentOptions } from './base'
 
 const TOOL_CALL_REQUIRED = 'Tool calls required but none provided'
 export enum ToolChoice {
@@ -15,15 +18,10 @@ export enum ToolChoice {
   REQUIRED = 'required',
 }
 
-export interface ToolCallAgentConfig {
-  name?: string
-  description?: string
-  systemPrompt?: string
-  nextStepPrompt?: string
+export interface ToolCallAgentConfig  extends Partial<BaseAgentOptions> {
   availableTools?: ToolCollection
   toolChoices?: ToolChoice
   specialToolNames?: string[]
-  maxSteps?: number
   maxObserve?: number | boolean
 }
 
@@ -34,7 +32,6 @@ export class ToolCallAgent extends ReactAgent {
   readonly toolChoices: ToolChoice
   readonly availableTools: ToolCollection
   readonly specialToolNames: string[]
-  readonly maxSteps: number
   readonly maxObserve: number | boolean | null
   toolCalls: ToolCall[] = []
   currentBase64Image: string | undefined
@@ -42,23 +39,21 @@ export class ToolCallAgent extends ReactAgent {
   constructor(config: ToolCallAgentConfig = {}) {
     super({
       name: config.name || 'ToolCallAgent',
-      description: config.description || 'Agent that can execute tool calls',
-      systemPrompt: config.systemPrompt || SYSTEM_PROMPT,
       nextStepPrompt: config.nextStepPrompt || NEXT_STEP_PROMPT,
+      systemPrompt: config.systemPrompt,
+      ...config,
     })
 
-    this.availableTools = config.availableTools
-      || new ToolCollection(new Terminate())
+    this.availableTools = config.availableTools || new ToolCollection(new Terminate())
     this.toolChoices = config.toolChoices || ToolChoice.AUTO
     this.specialToolNames = config.specialToolNames || [new Terminate().name]
-    this.maxSteps = config.maxSteps || 30
     this.maxObserve = config.maxObserve || null
   }
 
   /**
    * Process current state and decide next actions using tools
    */
-  async think(): Promise<boolean> {
+  async think(model?: string): Promise<boolean> {
     if (this.nextStepPrompt) {
       const userMsg = Message.userMessage(this.nextStepPrompt)
       this.messages.push(userMsg)
@@ -73,7 +68,7 @@ export class ToolCallAgent extends ReactAgent {
           : undefined,
         tools: this.availableTools.toParams(),
         toolChoice: this.toolChoices,
-        model: 'deepseek-ai/DeepSeek-V3',
+        model,
       })
 
       this.toolCalls = response?.tool_calls || []

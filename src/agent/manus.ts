@@ -8,79 +8,35 @@ import { Terminate } from '../tool/terminal'
 import { ToolCollection } from '../tool/tool-collection'
 import { ToolCallAgent } from './toolcall'
 
-export interface MCPServerConfig {
-  type: 'sse' | 'stdio'
-  url?: string
-  command?: string
-  args?: string[]
-}
-
 export interface ManusConfig {
-  // mcpClients?: MCPClients;
   availableTools?: ToolCollection
   maxObserve?: number
   maxSteps?: number
   workspaceRoot?: string
-  model?: string
-}
-
-export interface ServerConnection {
-  [serverId: string]: string // server_id -> url/command
 }
 
 /**
  * A versatile general-purpose agent with support for both local and MCP tools
  */
 export class Manus extends ToolCallAgent {
-  public readonly name = 'Manus'
-  public readonly description = 'A versatile agent that can solve various tasks using multiple tools including MCP-based tools'
-
-  systemPrompt: string
-  nextStepPrompt: string = NEXT_STEP_PROMPT
-  maxObserve: number = 10000
-  maxSteps: number = 20
-
-  // MCP clients for remote tool access
-  // private mcpClients: MCPClients
-
-  // Tool collection
-  availableTools: ToolCollection
-
-  // Special tools
-  specialToolNames: string[]
-  // browserContextHelper?: BrowserContextHelper
-
-  // Track connected MCP servers
-  // private connectedServers: ServerConnection = {}
   private initialized: boolean = false
 
   constructor(config: ManusConfig = {}) {
-    super()
-    this.systemPrompt = SYSTEM_PROMPT(
-      config.workspaceRoot || process.cwd(),
-    )
-
-    // this.mcpClients = config?.mcpClients || new MCPClients()
-
-    // Initialize base tools
-    this.availableTools = config?.availableTools || new ToolCollection(
-      new NodeExecute(),
-      // new BrowserUseTool(),
-      new StrReplaceEditor(),
-      new AskHuman(),
-      new Bash(),
-      new Terminate(),
-    )
-
-    this.specialToolNames = [new Terminate().name]
-    this.initializeHelper()
-  }
-
-  /**
-   * Initialize basic components synchronously
-   */
-  private initializeHelper(): void {
-    // this.browserContextHelper = new BrowserContextHelper(this)
+    super({
+      name: 'Manus',
+      systemPrompt: SYSTEM_PROMPT(config.workspaceRoot || process.cwd()),
+      nextStepPrompt: NEXT_STEP_PROMPT,
+      maxSteps: config.maxSteps,
+      maxObserve: config.maxObserve,
+      availableTools: config.availableTools || new ToolCollection(
+        new NodeExecute(),
+        new StrReplaceEditor(),
+        new AskHuman(),
+        new Bash(),
+        new Terminate(),
+      ),
+      specialToolNames: [new Terminate().name]
+    })
   }
 
   /**
@@ -182,9 +138,6 @@ export class Manus extends ToolCallAgent {
    * Clean up Manus agent resources
    */
   public async cleanup(): Promise<void> {
-    // if (this.browserContextHelper) {
-    //   await this.browserContextHelper.cleanupBrowser()
-    // }
     // Disconnect from all MCP servers only if we were initialized
     if (this.initialized) {
       await this.disconnectMcpServer()
@@ -195,7 +148,7 @@ export class Manus extends ToolCallAgent {
   /**
    * Process current state and decide next actions with appropriate context
    */
-  public async think(): Promise<boolean> {
+  public async think(model?: string): Promise<boolean> {
     if (!this.initialized) {
       await this.initializeMcpServers()
       this.initialized = true
@@ -203,17 +156,8 @@ export class Manus extends ToolCallAgent {
 
     const originalPrompt = this.nextStepPrompt
     const recentMessages = this.memory.messages.slice(-3)
-    // const browserInUse = recentMessages.some(msg =>
-    //   msg.tool_calls?.some(tc =>
-    //     tc.function.name === new BrowserUseTool().name,
-    //   ),
-    // )
 
-    // if (browserInUse && this.browserContextHelper) {
-    //   this.nextStepPrompt = await this.browserContextHelper.formatNextStepPrompt()
-    // }
-
-    const result = await super.think()
+    const result = await super.think(model)
 
     // Restore original prompt
     this.nextStepPrompt = originalPrompt

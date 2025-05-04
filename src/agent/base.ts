@@ -8,40 +8,12 @@ import { Message } from '../scheme'
 import { AgentState } from '../state'
 
 export interface BaseAgentOptions {
-  /**
-   * Unique name of the agent
-   */
   name: string
-
-  /**
-   * Optional agent description
-   */
-  description?: string
-
-  /**
-   * System-level instruction prompt
-   */
   systemPrompt?: string
-
-  /**
-   * Prompt for determining next action
-   */
   nextStepPrompt?: string
-
-  /**
-   * Maximum steps before termination
-   */
   maxSteps?: number
-
   duplicateThreshold?: number
-
-  /**
-   * Language model instance
-   */
   llm?: LLM
-  /**
-   * Agent's memory store
-   */
   memory?: Memory
 }
 
@@ -51,86 +23,56 @@ export interface BaseAgentOptions {
  * and a step-based execution loop. Subclasses must implement the `step` method.
  */
 export abstract class BaseAgent {
-  /**
-   * Unique name of the agent
-   */
   name: string
-
-  /**
-   * Optional agent description
-   */
-  description?: string
-
-  /**
-   * System-level instruction prompt
-   */
   systemPrompt?: string
-
-  /**
-   * Prompt for determining next action
-   */
   nextStepPrompt?: string
-
-  /**
-   * Current agent state
-   */
   state: AgentState = AgentState.IDLE
-
-  /**
-   * Maximum steps before termination
-   */
   maxSteps = 10
-
-  /**
-   * Current step in execution
-   */
-
   currentStep = 0
-
   duplicateThreshold = 2
-  /**
-   * Language model instance
-   */
   llm: LLM
-  /**
-   * Agent's memory store
-   */
   memory: Memory
 
-  constructor({ name, description, memory = new Memory(), llm = new LLM() }: BaseAgentOptions) {
+  constructor({ 
+    name, 
+    systemPrompt,
+    nextStepPrompt,
+    maxSteps = 10,
+    duplicateThreshold = 2,
+    memory = new Memory(), 
+    llm = new LLM() 
+  }: BaseAgentOptions) {
     this.name = name
-    this.description = description
+    this.systemPrompt = systemPrompt
+    this.nextStepPrompt = nextStepPrompt
+    this.maxSteps = maxSteps
+    this.duplicateThreshold = duplicateThreshold
     this.memory = memory
     this.llm = llm
   }
 
   /**
-   * Context manager for safe agent state transitions.
-   * @param newState The state to transition to during the context.
-   * @param fun  Allows execution function within the new state
+   * Context manager for safe agent state transitions
    */
-    /**
-     * Context manager for safe agent state transitions
-     */
-    protected async withState<T>(
-      newState: AgentState,
-      action: () => Promise<T>
+  protected async withState<T>(
+    newState: AgentState,
+    action: () => Promise<T>
   ): Promise<T> {
-      if (!Object.values(AgentState).includes(newState)) {
-          throw new Error(`Invalid state: ${newState}`);
-      }
+    if (!Object.values(AgentState).includes(newState)) {
+      throw new Error(`Invalid state: ${newState}`);
+    }
 
-      const previousState = this.state;
-      this.state = newState;
+    const previousState = this.state;
+    this.state = newState;
 
-      try {
-          return await action();
-      } catch (error) {
-          this.state = AgentState.ERROR;
-          throw error;
-      } finally {
-          this.state = previousState;
-      }
+    try {
+      return await action();
+    } catch (error) {
+      this.state = AgentState.ERROR;
+      throw error;
+    } finally {
+      this.state = previousState;
+    }
   }
 
   updateMemory({ role, content, toolCallId }: {
@@ -160,7 +102,7 @@ export abstract class BaseAgent {
    * @param request Optional initial user request to process.
    * @return A string summarizing the execution results.
    */
-  async run(request?: string) {
+  async run(request?: string, model?: string) {
     if (this.state !== AgentState.IDLE) {
       throw new Error(`Cannot run agent from state: ${this.state}`)
     }
@@ -175,7 +117,7 @@ export abstract class BaseAgent {
 
         this.currentStep++
         logger.info(`Executing step ${this.currentStep}/${this.maxSteps}`)
-        const stepResult = await this.step()
+        const stepResult = await this.step(model)
 
         if (this.isStuck()) {
           this.handleStuckState()
@@ -197,7 +139,7 @@ export abstract class BaseAgent {
    * Execute a single step in the agent's workflow.
    * Must be implemented by subclasses to define specific behavior.
    */
-  abstract step(): Promise<string>
+  abstract step(model?: string): Promise<string>
 
   /**
    * Check if the agent is stuck in a loop by detecting duplicate content
