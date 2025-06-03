@@ -1,3 +1,4 @@
+import { config } from '../config'
 import { logger } from '../logger'
 import { NEXT_STEP_PROMPT, SYSTEM_PROMPT } from '../prompt/manus'
 import { AskHuman } from '../tool/ask-human'
@@ -7,7 +8,6 @@ import { StrReplaceEditor } from '../tool/str-replace-editor'
 import { Terminate } from '../tool/terminal'
 import { ToolCollection } from '../tool/tool-collection'
 import { ToolCallAgent } from './toolcall'
-import { config } from '../config';
 
 export interface ManusParams {
   availableTools?: ToolCollection

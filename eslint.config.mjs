@@ -5,6 +5,8 @@ export default antfu({
   stylistic: {
 
   },
+  jsonc: false,
+  yaml: false,
   rules: {
     'no-console': 'off',
     'unused-imports/no-unused-imports': 'off',

@@ -6,7 +6,6 @@ export class ToolError extends Error {
     super(message)
     this.name = 'ToolError'
     // 修复 TypeScript 中继承 Error 的问题
-    Object.setPrototypeOf(this, ToolError.prototype)
   }
 }
 
@@ -17,7 +16,6 @@ export class OpenManusError extends Error {
   constructor(message: string) {
     super(message)
     this.name = 'OpenManusError'
-    Object.setPrototypeOf(this, OpenManusError.prototype)
   }
 }
 
@@ -28,6 +26,5 @@ export class TokenLimitExceeded extends OpenManusError {
   constructor(message: string) {
     super(message)
     this.name = 'TokenLimitExceeded'
-    Object.setPrototypeOf(this, TokenLimitExceeded.prototype)
   }
 }

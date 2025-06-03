@@ -2,18 +2,18 @@ import type { WebSearchEngine } from './search/base'
 import axios from 'axios'
 
 import * as cheerio from 'cheerio'
-import { retry } from '../decorator/retry'
+import { config } from '../config'
 
 /**
  * Search the web for information using various search engines
  */
 
+import { retry } from '../decorator/retry'
 import { logger } from '../logger'
 import { BaseTool, ToolResult } from '../tool/base'
 import { BaiduSearchEngine } from './search/baidu-search'
 import { BingSearchEngine } from './search/bing-search'
 import { GoogleSearchEngine } from './search/google-search'
-import { config } from '../config'
 
 /**
  * Represents a single search result returned by a search engine

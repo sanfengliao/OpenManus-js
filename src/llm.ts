@@ -9,11 +9,11 @@ import OpenAI, { AzureOpenAI } from 'openai'
 import * as tiktoken from 'tiktoken'
 import { config } from './config'
 
+import { retry } from './decorator/retry'
 // import { retry } from '../utils/retry';
 import { TokenLimitExceeded } from './exceptions'
 import { logger } from './logger'
 import { Message, ToolChoice } from './scheme'
-import { retry } from './decorator/retry'
 
 // 新增的接口定义
 export interface AskParams {
@@ -410,9 +410,9 @@ export class LLM {
   }
 
   @retry({
-      attempts: 6,
-      delay: { min: 1000, max: 60000 },
-      errorTypes: [Error]
+    attempts: 6,
+    delay: { min: 1000, max: 60000 },
+    errorTypes: [Error],
   })
   public async ask(params: AskParams) {
     try {
@@ -517,7 +517,7 @@ export class LLM {
   @retry({
     attempts: 6,
     delay: { min: 1000, max: 60000 },
-    errorTypes: [Error]
+    errorTypes: [Error],
   })
   public async askWithImages(params: AskWithImagesParams) {
     try {
@@ -639,7 +639,7 @@ export class LLM {
   @retry({
     attempts: 6,
     delay: { min: 1000, max: 60000 },
-    errorTypes: [Error]
+    errorTypes: [Error],
   })
   public async askTool(params: AskToolParams) {
     try {
