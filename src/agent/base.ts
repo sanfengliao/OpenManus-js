@@ -1,4 +1,3 @@
-import type { ChatCompletionMessageParam } from 'openai/resources/index'
 import type { IMessage } from '../scheme'
 import type { Role } from '../type'
 import { LLM } from '../llm'

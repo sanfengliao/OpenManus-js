@@ -213,7 +213,7 @@ export class WebSearch extends BaseTool {
   /**
    * Execute a Web search and return detailed search results
    */
-  public async execute(params: SearchParams): Promise<ToolResult> {
+  public async execute(params: SearchParams): Promise<SearchResponse> {
     const {
       query,
       numResults = 5,
@@ -235,7 +235,6 @@ export class WebSearch extends BaseTool {
         }
 
         return new SearchResponse({
-
           query,
           results,
           metadata: {

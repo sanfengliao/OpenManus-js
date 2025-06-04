@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import * as TOML from '@iarna/toml'
 
@@ -98,23 +98,18 @@ export class Config {
   }
 
   private getConfigPath(): string {
-    ;
     const configPath = join(PROJECT_ROOT, 'config', 'config.toml')
     const examplePath = join(PROJECT_ROOT, 'config', 'config.example.toml')
 
-    try {
-      readFileSync(configPath)
+    if (existsSync(configPath)) {
       return configPath
     }
-    catch {
-      try {
-        readFileSync(examplePath)
-        return examplePath
-      }
-      catch {
-        throw new Error('No configuration file found in config directory')
-      }
+    // 如果 config.example.toml 存在，则返回 example 文件路径
+    else if (existsSync(examplePath)) {
+      return examplePath
     }
+
+    throw new Error('No configuration file found in config directory')
   }
 
   private loadConfig(): any {
@@ -140,8 +135,7 @@ export class Config {
         }
       }
       return servers
-    }
-    catch {
+    } catch {
       return {}
     }
   }
@@ -150,7 +144,7 @@ export class Config {
     const rawConfig = this.loadConfig()
     const baseLlm = rawConfig.llm || {}
     const llmOverrides = Object.entries(baseLlm)
-      .filter(([_, v]) => typeof v === 'object')
+      .filter(([_, v]) => typeof v === 'object' && v !== null)
       .reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {})
 
     const defaultSettings: LLMSettings = {

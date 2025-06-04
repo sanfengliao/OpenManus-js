@@ -1,0 +1,3 @@
+[submodule "browser-use-js"]
+	path = browser-use-js
+	url = https://github.com/sanfengliao/browser-use-js
