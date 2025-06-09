@@ -15,5 +15,6 @@ export default antfu({
     'node/prefer-global/process': 'off',
     'ts/ban-ts-comment': 'off',
     'style/brace-style': ['off', '1tbs', { allowSingleLine: false }],
+    'node/prefer-global/buffer': 'off',
   },
 })

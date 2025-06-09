@@ -3,6 +3,7 @@ import { logger } from '../logger'
 import { NEXT_STEP_PROMPT, SYSTEM_PROMPT } from '../prompt/manus'
 import { AskHuman } from '../tool/ask-human'
 import { Bash } from '../tool/bash'
+import { BrowserUseTool } from '../tool/browser-use-tool'
 import { NodeExecute } from '../tool/node-execute'
 import { StrReplaceEditor } from '../tool/str-replace-editor'
 import { Terminate } from '../tool/terminal'
@@ -30,6 +31,7 @@ export class Manus extends ToolCallAgent {
       maxSteps: params.maxSteps,
       maxObserve: params.maxObserve,
       availableTools: params.availableTools || new ToolCollection(
+        new BrowserUseTool(),
         new NodeExecute(),
         new StrReplaceEditor(),
         new AskHuman(),
