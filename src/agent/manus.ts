@@ -4,6 +4,7 @@ import { NEXT_STEP_PROMPT, SYSTEM_PROMPT } from '../prompt/manus'
 import { AskHuman } from '../tool/ask-human'
 import { Bash } from '../tool/bash'
 import { BrowserUseTool } from '../tool/browser-use-tool'
+import { MCPClients, MCPClientTool } from '../tool/mcp'
 import { NodeExecute } from '../tool/node-execute'
 import { StrReplaceEditor } from '../tool/str-replace-editor'
 import { Terminate } from '../tool/terminal'
@@ -22,6 +23,9 @@ export interface ManusParams {
  */
 export class Manus extends ToolCallAgent {
   private initialized: boolean = false
+  private mcpClients = new MCPClients()
+
+  private connectedServers: Record<string, string> = {}
 
   constructor(params: ManusParams = {}) {
     super({
@@ -56,36 +60,36 @@ export class Manus extends ToolCallAgent {
    * Initialize connections to configured MCP servers
    */
   private async initializeMcpServers(): Promise<void> {
-    // for (const [serverId, serverConfig] of Object.entries(config.mcpConfig.servers)) {
-    //   try {
-    //     if (serverConfig.type === 'sse') {
-    //       if (serverConfig.url) {
-    //         await this.connectMcpServer(serverConfig.url, serverId)
-    //         logger.info(
-    //           `Connected to MCP server ${serverId} at ${serverConfig.url}`,
-    //         )
-    //       }
-    //     }
-    //     else if (serverConfig.type === 'stdio') {
-    //       if (serverConfig.command) {
-    //         await this.connectMcpServer(
-    //           serverConfig.command,
-    //           serverId,
-    //           true,
-    //           serverConfig.args,
-    //         )
-    //         logger.info(
-    //           `Connected to MCP server ${serverId} using command ${serverConfig.command}`,
-    //         )
-    //       }
-    //     }
-    //   }
-    //   catch (error) {
-    //     logger.error(
-    //       `Failed to connect to MCP server ${serverId}: ${error}`,
-    //     )
-    //   }
-    // }
+    for (const [serverId, serverConfig] of Object.entries(config.mcpConfig.servers)) {
+      try {
+        if (serverConfig.type === 'sse') {
+          if (serverConfig.url) {
+            await this.connectMcpServer(serverConfig.url, serverId)
+            logger.info(
+              `Connected to MCP server ${serverId} at ${serverConfig.url}`,
+            )
+          }
+        }
+        else if (serverConfig.type === 'stdio') {
+          if (serverConfig.command) {
+            await this.connectMcpServer(
+              serverConfig.command,
+              serverId,
+              true,
+              serverConfig.args,
+            )
+            logger.info(
+              `Connected to MCP server ${serverId} using command ${serverConfig.command}`,
+            )
+          }
+        }
+      }
+      catch (error) {
+        logger.error(
+          `Failed to connect to MCP server ${serverId}: ${error}`,
+        )
+      }
+    }
   }
 
   /**
@@ -93,48 +97,48 @@ export class Manus extends ToolCallAgent {
    */
   public async connectMcpServer(
     serverUrl: string,
-        serverId: string = '',
-        useStdio: boolean = false,
-        stdioArgs: string[] = [],
+    serverId: string = '',
+    useStdio: boolean = false,
+    stdioArgs: string[] = [],
   ): Promise<void> {
-    // if (useStdio) {
-    //   await this.mcpClients.connectStdio(
-    //     serverUrl,
-    //     stdioArgs,
-    //     serverId,
-    //   )
-    //   this.connectedServers[serverId || serverUrl] = serverUrl
-    // }
-    // else {
-    //   await this.mcpClients.connectSse(serverUrl, serverId)
-    //   this.connectedServers[serverId || serverUrl] = serverUrl
-    // }
+    if (useStdio) {
+      await this.mcpClients.connectStdio(
+        serverUrl,
+        stdioArgs,
+        serverId,
+      )
+      this.connectedServers[serverId || serverUrl] = serverUrl
+    }
+    else {
+      await this.mcpClients.connectSse(serverUrl, serverId)
+      this.connectedServers[serverId || serverUrl] = serverUrl
+    }
 
-    // // Update available tools with only the new tools from this server
-    // const newTools = this.mcpClients.tools.filter(
-    //   tool => tool.serverId === serverId,
-    // )
-    // this.availableTools.addTools(...newTools)
+    // Update available tools with only the new tools from this server
+    const newTools = this.mcpClients.tools.filter(
+      tool => tool.serverId === serverId,
+    )
+    this.availableTools.addTools(...newTools)
   }
 
   /**
    * Disconnect from an MCP server and remove its tools
    */
   public async disconnectMcpServer(serverId: string = ''): Promise<void> {
-    // await this.mcpClients.disconnect(serverId)
-    // if (serverId) {
-    //   delete this.connectedServers[serverId]
-    // }
-    // else {
-    //   this.connectedServers = {}
-    // }
+    await this.mcpClients.disconnect(serverId)
+    if (serverId) {
+      delete this.connectedServers[serverId]
+    }
+    else {
+      this.connectedServers = {}
+    }
 
-    // // Rebuild available tools without the disconnected server's tools
-    // const baseTools = this.availableTools.tools.filter(
-    //   tool => !(tool instanceof MCPClientTool),
-    // )
-    // this.availableTools = new ToolCollection(baseTools)
-    // this.availableTools.addTools(...this.mcpClients.tools)
+    // Rebuild available tools without the disconnected server's tools
+    const baseTools = this.availableTools.tools.filter(
+      tool => !(tool instanceof MCPClientTool),
+    )
+    this.availableTools = new ToolCollection(...baseTools)
+    this.availableTools.addTools(...this.mcpClients.tools)
   }
 
   /**

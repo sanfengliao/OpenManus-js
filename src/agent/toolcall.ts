@@ -30,7 +30,7 @@ export interface ToolCallAgentConfig extends Partial<BaseAgentOptions> {
  */
 export class ToolCallAgent extends ReactAgent {
   readonly toolChoices: ToolChoice
-  readonly availableTools: ToolCollection
+   availableTools: ToolCollection
   readonly specialToolNames: string[]
   readonly maxObserve: number | boolean | null
   toolCalls: ToolCall[] = []

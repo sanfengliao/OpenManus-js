@@ -59,12 +59,31 @@ export abstract class BaseTool implements IBaseTool {
  * Represents the result of a tool execution
  */
 export class ToolResult implements IToolResult {
+  output?: string
+  error?: string
+  base64Image?: string
+  system?: string
+  constructor(output?: string, error?: string, base64Image?: string, system?: string)
+  constructor(result: IToolResult)
   constructor(
-    public output?: any,
-    public error?: string,
-    public base64Image?: string,
-    public system?: string,
-  ) {}
+    outputOrResult?: string | IToolResult,
+    error?: string,
+    base64Image?: string,
+    system?: string,
+  ) {
+    if (typeof outputOrResult === 'string') {
+      this.output = outputOrResult
+      this.error = error
+      this.base64Image = base64Image
+      this.system = system
+    } else {
+      const result = outputOrResult || {}
+      this.output = result.output
+      this.error = result.error
+      this.base64Image = result.base64Image
+      this.system = result.system
+    }
+  }
 
   /**
    * Check if the result has any value
