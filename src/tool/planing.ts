@@ -73,7 +73,7 @@ export class PlanningTool extends BaseTool {
     additionalProperties: false,
   }
 
-  private plans: Record<string, Plan> = {}
+  plans: Record<string, Plan> = {}
   private currentPlanId?: string
 
   async execute(params: PlanExecuteParams): Promise<ToolResult> {

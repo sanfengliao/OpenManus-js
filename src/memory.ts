@@ -1,5 +1,5 @@
 import type { ChatCompletionMessageParam } from 'openai/resources/index'
-import type { IMessage } from './scheme'
+import type { IMessage } from './schema'
 
 export class Memory {
   messages: IMessage[] = []

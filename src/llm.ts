@@ -2,7 +2,7 @@ import type { ChatCompletionContentPart, ChatCompletionContentPartImage, ChatCom
 
 import type { Tiktoken } from 'tiktoken'
 import type { LLMSettings } from './config'
-import type { ContentItem, ImageItem, IMessage, ToolCall } from './scheme'
+import type { ContentItem, ImageItem, IMessage, ToolCall } from './schema'
 import OpenAI, { AzureOpenAI } from 'openai'
 
 import { ChatCompletionCreateParamsBase } from 'openai/resources/chat/completions'
@@ -13,7 +13,7 @@ import { retry } from './decorator/retry'
 // import { retry } from '../utils/retry';
 import { TokenLimitExceeded } from './exceptions'
 import { logger } from './logger'
-import { Message, ToolChoice } from './scheme'
+import { Message, ToolChoice } from './schema'
 
 // 新增的接口定义
 export interface AskParams {

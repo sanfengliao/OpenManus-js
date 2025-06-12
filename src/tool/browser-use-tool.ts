@@ -1,4 +1,4 @@
-import type { IMessage } from '../scheme'
+import type { IMessage } from '../schema'
 import TurndownService from 'turndown'
 import { BrowserProfile, BrowserSession } from '../../browser-use-js/src/browser/session'
 import { DomService } from '../../browser-use-js/src/dom/service'

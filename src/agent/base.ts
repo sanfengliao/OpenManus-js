@@ -1,9 +1,9 @@
-import type { IMessage } from '../scheme'
+import type { IMessage } from '../schema'
 import type { Role } from '../type'
 import { LLM } from '../llm'
 import { logger } from '../logger'
 import { Memory } from '../memory'
-import { Message } from '../scheme'
+import { Message } from '../schema'
 import { AgentState } from '../state'
 
 export interface BaseAgentOptions {
@@ -23,6 +23,7 @@ export interface BaseAgentOptions {
  */
 export abstract class BaseAgent {
   name: string
+  description!: string
   systemPrompt?: string
   nextStepPrompt?: string
   state: AgentState = AgentState.IDLE

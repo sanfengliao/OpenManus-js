@@ -1,10 +1,10 @@
-import type { ToolCall } from '../scheme'
+import type { ToolCall } from '../schema'
 import type { BaseAgentOptions } from './base'
 import { LLM } from '../llm'
 import { logger } from '../logger'
 import { Memory } from '../memory'
 import { NEXT_STEP_PROMPT, SYSTEM_PROMPT } from '../prompt/toolcall'
-import { Message } from '../scheme'
+import { Message } from '../schema'
 
 import { AgentState } from '../state'
 import { Terminate } from '../tool/terminal'
