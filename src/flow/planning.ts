@@ -169,7 +169,7 @@ export class PlanningFlow extends BaseFlow {
         result += `${stepResult}\n`
 
         // Check if agent wants to terminate
-        if ('state' in executor && (executor as any).state === AgentState.FINISHED) {
+        if ('state' in executor && executor.state === AgentState.FINISHED) {
           break
         }
       }
@@ -205,7 +205,7 @@ export class PlanningFlow extends BaseFlow {
     if (agentsDescription.length > 1) {
       // Add description of agents to select
       systemMessageContent += (
-        `\nNow we have ${agentsDescription} agents. `
+        `\nNow we have ${agentsDescription.length} agents. `
         + `The infomation of them are below: ${JSON.stringify(agentsDescription)}\n`
         + 'When creating steps in the planning tool, please specify the agent names using the format \'[agent_name]\'.'
       )
