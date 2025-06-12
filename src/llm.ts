@@ -1,14 +1,14 @@
 import type { ChatCompletionContentPart, ChatCompletionContentPartImage, ChatCompletionCreateParamsNonStreaming, ChatCompletionCreateParamsStreaming, ChatCompletionMessageParam, ChatCompletionSystemMessageParam, ChatCompletionTool, ChatCompletionToolChoiceOption, ChatCompletionToolMessageParam } from 'openai/resources/chat'
-import type { ChatCompletionCreateParamsBase } from 'openai/resources/chat/completions'
 
 import type { Tiktoken } from 'tiktoken'
 import type { LLMSettings } from './config'
 import type { ContentItem, ImageItem, IMessage, ToolCall } from './scheme'
 import OpenAI, { AzureOpenAI } from 'openai'
 
+import { ChatCompletionCreateParamsBase } from 'openai/resources/chat/completions'
 import * as tiktoken from 'tiktoken'
-import { config } from './config'
 
+import { config } from './config'
 import { retry } from './decorator/retry'
 // import { retry } from '../utils/retry';
 import { TokenLimitExceeded } from './exceptions'
@@ -188,20 +188,19 @@ const TOOL_CALL_PARAM_REQUIRED_MODELS = [
 
 export class LLM {
   private static instances: Map<string, LLM> = new Map()
-  private client!: OpenAI
-  private tokenCounter!: TokenCounter
-  private tokenizer!: Tiktoken
-  private model: string
-  private maxTokens: number
-  private temperature: number
-  private apiType: string
-  private apiKey: string
-  private apiVersion: string
-  private baseUrl: string
-  private totalInputTokens: number = 0
-  private totalCompletionTokens: number = 0
-  private maxInputTokens?: number
-
+  tokenCounter!: TokenCounter
+  client!: OpenAI
+  tokenizer!: Tiktoken
+  model: string
+  maxTokens: number
+  temperature: number
+  apiType: string
+  apiKey: string
+  apiVersion: string
+  baseUrl: string
+  totalInputTokens: number = 0
+  totalCompletionTokens: number = 0
+  maxInputTokens?: number
   constructor(
     configName: string = 'default',
     llmConfig?: LLMSettings,

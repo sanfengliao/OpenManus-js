@@ -2,7 +2,7 @@ import type { ChildProcess } from 'node:child_process'
 import { spawn } from 'node:child_process'
 import { BaseTool } from './base'
 
-interface ExecuteResult {
+export interface ExecuteResult {
   observation: string
   success: boolean
 }

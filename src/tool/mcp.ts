@@ -43,6 +43,7 @@ export class MCPClientTool extends BaseTool {
         if (item.type === 'text') {
           return item.text
         }
+        return ''
       }).filter(Boolean).jin(',')
       return new ToolResult({
         output: contentStr || 'No output returned.',
@@ -121,7 +122,7 @@ export class MCPClients extends ToolCollection {
 
   /**
    * Initialize session and populate tool map
-   * @param serverId 
+   * @param serverId
    */
   async initializeAndListTools(serverId: string) {
     const client = this.clients[serverId]
@@ -185,10 +186,10 @@ export class MCPClients extends ToolCollection {
       if (client) {
         await client.close()
       }
- 
+
       const names = this.toolMap.keys().filter(name => this.toolMap.get(name)?.serverId === serverId)
 
-      names.forEach(name => {
+      names.forEach((name) => {
         this.toolMap.delete(name)
       })
       this.tools = Array.from(this.toolMap.values())
@@ -197,7 +198,6 @@ export class MCPClients extends ToolCollection {
         this.disconnect(tool.serverId)
       })
       this.toolMap.clear()
-
     }
   }
 }

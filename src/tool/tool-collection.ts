@@ -1,5 +1,5 @@
-import type { ChatCompletionTool } from 'openai/resources/index'
 import type { BaseTool, ToolResult } from './base'
+import { ChatCompletionTool } from 'openai/resources/index'
 import { ToolError } from '../exceptions'
 /**
  * Collection classes for managing multiple tools.
